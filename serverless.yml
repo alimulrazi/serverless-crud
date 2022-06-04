@@ -8,42 +8,71 @@ provider:
   region: us-east-1
   lambdaHashingVersion: 20201221
 
+  apiGateway:
+    apiKeys:
+      - free:
+          - ${opt:stage, self:provider.stage, "dev"}-freekey
+      - paid:
+          - ${opt:stage, self:provider.stage, "dev"}-prokey
+    usagePlan:
+      - free:
+          quota:
+            limit: 5000
+            offset: 2
+            period: MONTH
+          throttle:
+            burstLimit: 200
+            rateLimit: 100
+      - paid:
+          quota:
+            limit: 50000
+            offset: 1
+            period: MONTH
+          throttle:
+            burstLimit: 2000
+            rateLimit: 1000
+
 # add 5 functions added for CURD operation
 functions: 
   create:
-    handler: handler.create
+    handler: lambdas/endpoints/handler.create
     events:
       - http: 
           path: notes
           method: post
           cors: true
+          private: true
   getOne:
-    handler: handler.getOne
+    handler: lambdas/endpoints/handler.getOne
     events:
       - http: 
           path: notes/{id}
           method: get
           cors: true
+          private: true
   getAll:
-    handler: handler.getAll
+    handler: lambdas/endpoints/handler.getAll
     events:
       - http: 
           path: notes
           method: get
           cors: true
+          private: true
   update:
-    handler: handler.update
+    handler: lambdas/endpoints/handler.update
     events:
       - http: 
           path: notes/{id}
           method: put
           cors: true
+          private: true
   delete:
-    handler: handler.delete
+    handler: lambdas/endpoints/handler.delete
     events:
       - http: 
           path: notes/{id}
           method: delete
           cors: true
+          private: true
 plugins:
 - serverless-offline
